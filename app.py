@@ -7,11 +7,11 @@ import os
 # 1. Cargar datos
 # ======================================================
 # Segmentos
-df = pd.read_csv(r"C:\Dengue_caracterization\DATA_LAST\JoinPoint Results\Total.Export.APC.txt")
+df = pd.read_csv(r"Joinpoint-Results/Total.Export.APC.txt")
 df["Significativo"] = df["PPC Significant"].map({1: "Sí", 0: "No"})
 
 # Datos del modelo (REM y predicción)
-df_fit = pd.read_csv(r"C:\Dengue_caracterization\DATA_LAST\JoinPoint Results\Total.Export.Data.txt")
+df_fit = pd.read_csv(r"Joinpoint-Results/Total.Export.Data.txt")
 
 # Municipios disponibles
 municipios = sorted(df["municipio"].unique())
@@ -189,3 +189,4 @@ def actualizar_dashboard(municipio):
 # ======================================================
 if __name__ == "__main__":
     app.run(debug=True)
+
