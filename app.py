@@ -23,7 +23,7 @@ app = Dash(__name__)
 
 app.layout = html.Div([
 
-    html.H2("Dashboard Joinpoint – Dengue", style={"text-align": "center"}),
+    html.H2("Resultados del Joinpoint del REM.", style={"text-align": "center"}),
 
     html.Label("Selecciona un municipio:", style={"font-weight": "bold"}),
     dcc.Dropdown(
@@ -189,4 +189,5 @@ def actualizar_dashboard(municipio):
 # ======================================================
 if __name__ == "__main__":
     app.run(debug=True)
+
 
