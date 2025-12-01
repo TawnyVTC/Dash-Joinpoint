@@ -10,6 +10,9 @@ import os
 df = pd.read_csv(r"Joinpoint-Results/Total.Export.APC.txt")
 df["Significativo"] = df["PPC Significant"].map({1: "Sí", 0: "No"})
 
+# Crear columna PValue desde 'P-Value'
+df["PValue"] = df["P-Value"]
+
 # Datos del modelo (REM y predicción)
 df_fit = pd.read_csv(r"Joinpoint-Results/Total.Export.Data.txt")
 
@@ -49,7 +52,10 @@ app.layout = html.Div([
                 id="tabla_ppc",
                 columns=[
                     {"name": "Segmento", "id": "Segment"},
-                    {"name": "PPC", "id": "PPC", "type": "numeric", "format": {"specifier": ".2f"}},
+                    {"name": "PPC", "id": "PPC", "type": "numeric",
+                     "format": {"specifier": ".2f"}},
+                    {"name": "p-value", "id": "PValue", "type": "numeric",
+                     "format": {"specifier": ".4f"}},
                     {"name": "Significativo", "id": "Significativo"}
                 ],
                 style_table={"width": "100%"},
@@ -103,12 +109,12 @@ def actualizar_dashboard(municipio):
     df_f = df_f.sort_values("periodo_global")
 
     # ======================================================
-    # 1) GRAFICO PRINCIPAL JOINPOINT (Plotly)
+    # 1) GRAFICO PRINCIPAL JOINPOINT
     # ======================================================
 
     fig_join = go.Figure()
 
-    # ---- puntos observados ----
+    # ---- Observados ----
     fig_join.add_trace(go.Scatter(
         x=df_f["periodo_global"],
         y=df_f["REM"],
@@ -117,20 +123,22 @@ def actualizar_dashboard(municipio):
         name="Observado"
     ))
 
-    # ---- segmentos JOINPOINT ----
+    # ---- Segmentos JOINPOINT ----
     colors = ["blue", "green", "red", "purple", "orange", "brown"]
 
     for i, row in df_m.iterrows():
         ini = row["Segment Start"]
         fin = row["Segment End"]
 
-        tramo = df_f[(df_f["periodo_global"] >= ini) & (df_f["periodo_global"] <= fin)]
+        tramo = df_f[(df_f["periodo_global"] >= ini) &
+                     (df_f["periodo_global"] <= fin)]
 
         fig_join.add_trace(go.Scatter(
             x=tramo["periodo_global"],
             y=tramo["Model"],
             mode="lines",
-            line=dict(width=3, color=colors[int(row["Segment"]) % len(colors)]),
+            line=dict(width=3,
+                      color=colors[int(row["Segment"]) % len(colors)]),
             name=f"Segmento {row['Segment']}"
         ))
 
@@ -143,9 +151,9 @@ def actualizar_dashboard(municipio):
     )
 
     # ======================================================
-    # 2) TABLA SEGMENTOS
+    # 2) TABLA SEGMENTOS (incluye p-value)
     # ======================================================
-    tabla = df_m[["Segment", "PPC", "Significativo"]].to_dict("records")
+    tabla = df_m[["Segment", "PPC", "PValue", "Significativo"]].to_dict("records")
 
     # ======================================================
     # 3) CUADRO N° JOINPOINTS
@@ -189,5 +197,3 @@ def actualizar_dashboard(municipio):
 # ======================================================
 if __name__ == "__main__":
     app.run(debug=True)
-
-
